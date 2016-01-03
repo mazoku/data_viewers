@@ -957,11 +957,11 @@ if __name__ == '__main__':
     if fname_1 is not None:
         datap_1 = dr.Get3DData(fname_1, dataplus_format=True)
     else:
-        datap_1 = {'data3d': None, 'segmentation':None, 'slab':None, 'voxelsize_mm':None}
+        datap_1 = {'data3d': None, 'segmentation': None, 'slab':None, 'voxelsize_mm': None}
     if fname_2 is not None:
         datap_2 = dr.Get3DData(fname_2, dataplus_format=True)
     else:
-        datap_2 = {'data3d': None, 'segmentation':None, 'slab':None, 'voxelsize_mm':None}
+        datap_2 = {'data3d': None, 'segmentation': None, 'slab':None, 'voxelsize_mm': None}
 
     # starting application
     app = QtGui.QApplication(sys.argv)

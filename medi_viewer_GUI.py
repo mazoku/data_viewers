@@ -327,6 +327,7 @@ if __name__ == '__main__':
             self.ui = MediViewerGUI()
             self.ui.setupUi(self)
 
+
     app = QtGui.QApplication(sys.argv)
     e = editor()
     e.show()
