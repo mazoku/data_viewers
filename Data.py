@@ -237,7 +237,7 @@ class Data(object):
     #
     #     self.loaded = True
 
-    def create_data(self, datap, filename):
+    def create_data(self, datap, filename, params):
         if datap is None and filename is None:
             raise AttributeError('No data nor filename given.')
 
@@ -269,6 +269,13 @@ class Data(object):
         self.orig_shape = self.data.shape
         self.n_slices, self.n_rows, self.n_cols = self.orig_shape
         self.shape = self.data.shape
+
+        if 'segmentation' in datap and datap['segmentation'] is not None:
+            labels = np.where(datap['mask'], params['healthy_label'], 0)
+            labels = np.where(datap['segmentation'] == 1, params['hypo_label'], labels)
+            # labels = np.where(datap['segmentation'] == 3, params['hyper_label'], labels)
+            self.labels = labels
+            self.processed = True
 
         self.loaded = True
 

@@ -15,13 +15,14 @@ from os import path
 
 import io3d
 import ConfigParser
+import pickle
 
 import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig()
 
 # from lession_editor_GUI_slim import Ui_MainWindow
-from medi_viewer_GUI import MediViewerGUI
+from seg_viewer_GUI import SegViewerGUI
 # from hist_widget import Hist_widget
 # from objects_widget import Objects_widget
 # import My_table_model as mtm
@@ -40,7 +41,7 @@ SHOW_CONTOURS = 2
 MODE_VIEWING = 0
 MODE_ADDING = 1
 
-class MediViewer(QtGui.QMainWindow):
+class SegViewer(QtGui.QMainWindow):
     """Main class of the programm."""
 
 
@@ -56,7 +57,7 @@ class MediViewer(QtGui.QMainWindow):
                            border: black solid 1px
                            }""")
 
-        self.ui = MediViewerGUI()
+        self.ui = SegViewerGUI()
         self.ui.setupUi(self)
 
         # seting up icons
@@ -117,7 +118,7 @@ class MediViewer(QtGui.QMainWindow):
             'hypo_label': 1,
             'healthy_label': 2,
             'hyper_label': 3,
-            'data_dir': '/home/tomas/Data/liver_segmentation/tryba/data_other'
+            'data_dir': '/home/tomas/Data/liver_segmentation'
             # 'voxel_size': (1, 1, 1)
         }
         self.params.update(self.load_parameters())
@@ -162,8 +163,8 @@ class MediViewer(QtGui.QMainWindow):
        #  self.params['min_density'] = self.objects_widget.density_RS.start()
        #  self.params['min_compactness'] = self.objects_widget.ui.min_compactness_SL.value() * self.params['compactness_step']
 
-        self.ui.action_load_serie_1.triggered.connect(lambda: self.action_load_serie_callback(1))
-        self.ui.action_load_serie_2.triggered.connect(lambda: self.action_load_serie_callback(2))
+        # self.ui.action_load_serie_1.triggered.connect(lambda: self.action_load_serie_callback(1))
+        # self.ui.action_load_serie_2.triggered.connect(lambda: self.action_load_serie_callback(2))
 
         # self.ui.action_circle.triggered.connect(self.action_circle_callback)
         # self.ui.action_show_color_model.triggered.connect(self.action_show_color_model_callback)
@@ -208,16 +209,16 @@ class MediViewer(QtGui.QMainWindow):
         # DATA ---------------------------------------------
         if datap1 is not None:
             self.data_1 = Data.Data()
-            self.data_1.create_data(datap1, 'datap1')
+            self.data_1.create_data(datap1, 'datap1', self.params)
             self.params['voxel_size'] = datap1['voxelsize_mm']
             self.params['voxels2ml_k'] = np.prod(self.params['voxel_size']) * 0.001
         if datap2 is not None:
             self.data_2 = Data.Data()
-            self.data_2.create_data(datap2, 'datap2')
+            self.data_2.create_data(datap2, 'datap2', self.params)
 
         if self.data_1.loaded:
             # self.hist_widget = Hist_widget(data=self.data_1.data[np.nonzero(self.data_1.mask)])
-            self.hist_widget.set_data(data=self.data_1.data[np.nonzero(self.data_1.mask)])
+            # self.hist_widget.set_data(data=self.data_1.data[np.nonzero(self.data_1.mask)])
 
             #seting up figure and data_L, data_R
             self.ui.figure_L_CB.addItem(self.data_1.filename.split('/')[-1])
@@ -228,9 +229,15 @@ class MediViewer(QtGui.QMainWindow):
             if not self.data_2.loaded:
                 self.data_R = self.data_1
                 self.ui.slice_R_SB.setMaximum(self.data_1.n_slices - 1)
+            #     self.ui.show_labels_R_BTN.setEnabled(True)
+            #     self.ui.show_contours_R_BTN.setEnabled(True)
 
             self.ui.slice_C_SB.setMaximum(self.data_1.n_slices - 1)
             self.ui.slice_L_SB.setMaximum(self.data_1.n_slices - 1)
+            # if self.data_L.segmentation is not None:
+            self.ui.show_labels_L_BTN.setEnabled(True)
+            self.ui.show_contours_L_BTN.setEnabled(True)
+            # if self.data_R.segmentation is not None:
 
         if self.data_2.loaded:
             # self.ui.serie_2_RB.setText('Serie #2: ' + self.cc.data_2.filename.split('/')[-1])
@@ -243,12 +250,19 @@ class MediViewer(QtGui.QMainWindow):
                 self.active_data = self.data_2
                 self.active_data_idx = 2
 
-                self.hist_widget.set_data(data=self.data_2.data[np.nonzero(self.data_2.mask)])
+                # self.hist_widget.set_data(data=self.data_2.data[np.nonzero(self.data_2.mask)])
 
                 self.ui.slice_C_SB.setMaximum(self.data_2.n_slices - 1)
                 self.ui.slice_L_SB.setMaximum(self.data_2.n_slices - 1)
 
+                self.ui.show_labels_L_BTN.setEnabled(True)
+                self.ui.show_contours_L_BTN.setEnabled(True)
+            # else:
+            #     self.ui.show_labels_R_BTN.setEnabled(True)
+            #     self.ui.show_contours_R_BTN.setEnabled(True)
+
             self.ui.slice_R_SB.setMaximum(self.data_2.n_slices - 1)
+
 
         if self.data_L is not None:
             # self.view_L = data_view_widget.SliceBox(self)
@@ -258,8 +272,8 @@ class MediViewer(QtGui.QMainWindow):
             self.view_L.setCW(self.params['win_w'], 'w')
             self.view_L.setSlice(self.data_L.data_aview[...,0])
             # mouse click signal
-            self.view_L.mouseClickSignal.connect(self.mouse_click_event)
-            self.view_L.mousePressEvent = self.view_L.myMousePressEvent
+            # self.view_L.mouseClickSignal.connect(self.mouse_click_event)
+            # self.view_L.mousePressEvent = self.view_L.myMousePressEvent
 
         if self.data_R is not None:
             # self.view_R = data_view_widget.SliceBox(self)
@@ -278,17 +292,17 @@ class MediViewer(QtGui.QMainWindow):
         key = QKeyEvent.key()
         if key == QtCore.Qt.Key_Escape:
             print 'Escape'
-            if self.view_L.area_hist_widget is not None and self.view_L.area_hist_widget.isVisible():
-                self.view_L.circle_active = False
-                self.view_L.area_hist_widget.close()
-                self.view_L.setMouseTracking(False)
-                self.view_L.updateSlice()
-            elif self.hist_widget is not None and self.hist_widget.isVisible():
-                self.hist_widget.close()
-            elif self.objects_widget is not None and self.objects_widget.isVisible():
-                self.objects_widget.close()
-            else:
-                self.close()
+            # if self.view_L.area_hist_widget is not None and self.view_L.area_hist_widget.isVisible():
+            #     self.view_L.circle_active = False
+            #     self.view_L.area_hist_widget.close()
+            #     self.view_L.setMouseTracking(False)
+            #     self.view_L.updateSlice()
+            # elif self.hist_widget is not None and self.hist_widget.isVisible():
+            #     self.hist_widget.close()
+            # elif self.objects_widget is not None and self.objects_widget.isVisible():
+            #     self.objects_widget.close()
+            # else:
+            self.close()
         # elif key == QtCore.Qt.Key_H:
         #     print 'H'
         #     self.action_show_color_model_callback()
@@ -508,19 +522,22 @@ class MediViewer(QtGui.QMainWindow):
         im_R = self.get_image('R')
         if self.show_mode_L == SHOW_CONTOURS:
             labels_L = self.data_L.labels_filt[self.actual_slice_L, :, :]
-            obj_centers_L = self.data_L.object_centers_filt[self.actual_slice_L, ...]
+            # obj_centers_L = self.data_L.object_centers_filt[self.actual_slice_L, ...]
+
         else:
             labels_L = None
-            obj_centers_L = None
+            # obj_centers_L = None
         if self.show_mode_R == SHOW_CONTOURS:
             labels_R = self.data_R.labels_filt[self.actual_slice_R, :, :]
-            obj_centers_R = self.data_R.object_centers_filt[self.actual_slice_R, ...]
+            # obj_centers_R = self.data_R.object_centers_filt[self.actual_slice_R, ...]
         else:
             labels_R = None
-            obj_centers_R = None
+            # obj_centers_R = None
 
-        self.view_L.setSlice(im_L, contours=labels_L, centers=obj_centers_L)
-        self.view_R.setSlice(im_R, contours=labels_R, centers=obj_centers_R)
+        # self.view_L.setSlice(im_L, contours=labels_L, centers=obj_centers_L)
+        # self.view_R.setSlice(im_R, contours=labels_R, centers=obj_centers_R)
+        self.view_L.setSlice(im_L, contours=labels_L)
+        self.view_R.setSlice(im_R, contours=labels_R)
 
         self.ui.slice_number_L_LBL.setText('%i/%i' % (self.actual_slice_L + 1, self.data_L.n_slices))
         # self.ui.slice_number_C_LBL.setText('slice # = %i/%i' % (self.actual_slice_L + 1, self.data_L.n_slices))
@@ -539,12 +556,14 @@ class MediViewer(QtGui.QMainWindow):
         im_L = self.get_image('L')
         if self.show_mode_L == SHOW_CONTOURS:
             labels_L = self.data_L.labels_filt[self.actual_slice_L, :, :]
-            obj_centers = self.data_L.object_centers_filt[self.actual_slice_L, ...]
+            # obj_centers = self.data_L.object_centers_filt[self.actual_slice_L, ...]
+            obj_centers = None
         else:
             labels_L = None
             obj_centers = None
 
-        self.view_L.setSlice(im_L, contours=labels_L, centers=obj_centers)
+        # self.view_L.setSlice(im_L, contours=labels_L, centers=obj_centers)
+        self.view_L.setSlice(im_L, contours=labels_L)
 
         self.ui.slice_number_L_LBL.setText('%i/%i' % (self.actual_slice_L + 1, self.data_L.n_slices))
         # self.ui.slice_number_C_LBL.setText('slice # = %i/%i' % (self.actual_slice_L + 1, self.data_L.n_slices))
@@ -560,12 +579,14 @@ class MediViewer(QtGui.QMainWindow):
         im_R = self.get_image('R')
         if self.show_mode_R == SHOW_CONTOURS:
             labels_R = self.data_R.labels_filt[self.actual_slice_R, :, :]
-            obj_centers = self.data_R.object_centers_filt[self.actual_slice_R, ...]
+            # obj_centers = self.data_R.object_centers_filt[self.actual_slice_R, ...]
+            obj_centers = None
         else:
             labels_R = None
             obj_centers = None
 
-        self.view_R.setSlice(im_R, contours=labels_R, centers=obj_centers)
+        # self.view_R.setSlice(im_R, contours=labels_R, centers=obj_centers)
+        self.view_R.setSlice(im_R, contours=labels_R)
 
     # def calculate_models_callback(self):
     #     # self.statusBar().showMessage('Calculating intensity models...')
@@ -752,7 +773,8 @@ class MediViewer(QtGui.QMainWindow):
         labels = self.data_L.labels_filt[self.actual_slice_L, :, :]
         # obj_centers = [self.data_L.object_centers[:2] if self.data_L.object_centers[2] == self.actual_slice_L]
         # obj_centers = [x[1:] for x in self.data_L.object_centers if round(x[0]) == self.actual_slice_L]
-        self.view_L.setSlice(im, contours=labels, centers=self.data_L.object_centers_filt[self.actual_slice_L,...])
+        # self.view_L.setSlice(im, contours=labels, centers=self.data_L.object_centers_filt[self.actual_slice_L,...])
+        self.view_L.setSlice(im, contours=labels)
 
         # self.statusBar().showMessage('data_L set to contours')
 
@@ -767,7 +789,8 @@ class MediViewer(QtGui.QMainWindow):
 
         im = self.get_image('R')
         labels = self.data_R.labels_filt[self.actual_slice_R, :, :]
-        self.view_R.setSlice(im, contours=labels, centers=self.data_R.object_centers_filt[self.actual_slice_R,...])
+        # self.view_R.setSlice(im, contours=labels, centers=self.data_R.object_centers_filt[self.actual_slice_R,...])
+        self.view_R.setSlice(im, contours=labels)
 
         # self.statusBar().showMessage('data_R set to contours')
 
@@ -831,21 +854,21 @@ class MediViewer(QtGui.QMainWindow):
         self.view_R.reinit((self.data_R.shape[2], self.data_R.shape[1]))
         self.show_im_R_callback()
 
-    def action_load_serie_callback(self, serie_number):
-        # loading file and creating dataplus format
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', self.params['data_dir']))
-        datap = dr.Get3DData(fname, dataplus_format=True)
-
-        # creating data structure
-        # data = Data.Data()
-        # data.create_data(datap, fname)
-
-        if serie_number == 1:
-            self.setup_data(datap1=datap)
-        else:
-            self.setup_data(datap2=datap)
-        # print 'Does not work yet.'
-        # print fname
+    # def action_load_serie_callback(self, serie_number):
+    #     # loading file and creating dataplus format
+    #     fname = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', self.params['data_dir']))
+    #     datap = dr.Get3DData(fname, dataplus_format=True)
+    #
+    #     # creating data structure
+    #     # data = Data.Data()
+    #     # data.create_data(datap, fname)
+    #
+    #     if serie_number == 1:
+    #         self.setup_data(datap1=datap)
+    #     else:
+    #         self.setup_data(datap2=datap)
+    #     # print 'Does not work yet.'
+    #     # print fname
 
     # def remove_obj_BTN_callback(self):
     #     indexes = self.objects_widget.ui.objects_TV.selectionModel().selectedRows()
@@ -907,66 +930,14 @@ class MediViewer(QtGui.QMainWindow):
 ################################################################################
 ################################################################################
 if __name__ == '__main__':
-    fname_1 = None
+    fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.npy'
     fname_2 = None
 
-    # 2 hypo, 1 on the border --------------------
-    # TODO: study ID 29 - 3/3, 2 velke spoji v jeden
-    # slice = 17
-    fname_1 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_183_46324212_venous_5.0_B30f-.pklz'
-    fname_2 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_183_46324212_arterial_5.0_B30f-.pklz'
-
-    # hypo in venous -----------------------
-    # arterial - bad
-    # fname_1 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_186_49290986_venous_0.6_B20f-.pklz'
-    # venous - good
-    # fname_2 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_186_49290986_arterial_0.6_B20f-.pklz'
-
-
-    # hyper, 1 on the border -------------------
-    # arterial 0.6mm - not that bad
-    # fname_1 = '/home/tomas/Data/liver_segmentation_06mm/hyperdenzni/org-exp_239_61293268_DE_Art_Abd_0.75_I26f_M_0.5-.pklz'
-    # venous 5mm - bad
-    # fname_2 = '/home/tomas/Data/liver_segmentation_06mm/hyperdenzni/org-exp_239_61293268_DE_Ven_Abd_0.75_I26f_M_0.5-.pklz'
-
-    # shluk -----------------
-    # arterial 5mm
-    # TODO: study ID 18 - velke najde (hyper v arterialni fazi), 1/2 z malych
-    # fname_1 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_180_49509315_venous_5.0_B30f-.pklz'
-    # fname_2 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_180_49509315_arterial_5.0_B30f-.pklz'
-
-
-    # targeted
-    # arterial 0.6mm - bad
-    # fname_1 = '/home/tomas/Data/liver_segmentation_06mm/hyperdenzni/org-exp_238_54280551_Abd_Arterial_0.75_I26f_3-.pklz'
-    # venous 0.6mm - bad
-    # fname_2 = '/home/tomas/Data/liver_segmentation_06mm/hyperdenzni/org-exp_238_54280551_Abd_Venous_0.75_I26f_3-.pklz'
-
-    # TODO: study ID 25 - 2/2
-    # fname_1 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_185_48441644_venous_5.0_B30f-.pklz'
-    # fname_2 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_185_48441644_arterial_5.0_B30f-.pklz'
-
-    # TODO: study ID 21 - 0/2, nenasel ani jeden pekny hypo
-    # slice = 6
-    # fname_1 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_186_49290986_venous_5.0_B30f-.pklz'
-    # fname_2 = '/home/tomas/Data/liver_segmentation/tryba/data_other/org-exp_186_49290986_arterial_5.0_B30f-.pklz'
-
-    # runing application -------------------------
-    # reading data
-    dr = io3d.DataReader()
-    if fname_1 is not None:
-        datap_1 = dr.Get3DData(fname_1, dataplus_format=True)
-    else:
-        datap_1 = {'data3d': None, 'segmentation': None, 'slab':None, 'voxelsize_mm': None}
-    if fname_2 is not None:
-        datap_2 = dr.Get3DData(fname_2, dataplus_format=True)
-    else:
-        datap_2 = {'data3d': None, 'segmentation': None, 'slab':None, 'voxelsize_mm': None}
+    datap_1 = pickle.load(open(fname_1, 'rb'))
+    # seg = np.load(fname_1)
 
     # starting application
     app = QtGui.QApplication(sys.argv)
-    # le = LessionEditor(datap1=datap_1, datap2=datap_2)
-    le = MediViewer(datap1=datap_1)
-    # le = LessionEditor()
+    le = SegViewer(datap1=datap_1)
     le.show()
     sys.exit(app.exec_())

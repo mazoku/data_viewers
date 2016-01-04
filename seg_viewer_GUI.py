@@ -19,7 +19,7 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 
-class MediViewerGUI(object):
+class SegViewerGUI(object):
     # def __init__(self):
     #     QtGui.QWidget.__init__(self)
     #     self.setupUi()
@@ -67,7 +67,7 @@ class MediViewerGUI(object):
         self.show_im_L_BTN.setIconSize(QtCore.QSize(16, 16))
 
         self.show_labels_L_BTN = QtGui.QPushButton()
-        self.show_labels_L_BTN.setEnabled(False)
+        # self.show_labels_L_BTN.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -80,7 +80,7 @@ class MediViewerGUI(object):
         self.show_labels_L_BTN.setIconSize(QtCore.QSize(16, 16))
 
         self.show_contours_L_BTN = QtGui.QPushButton()
-        self.show_contours_L_BTN.setEnabled(False)
+        # self.show_contours_L_BTN.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -324,7 +324,7 @@ if __name__ == '__main__':
     class editor(QtGui.QMainWindow):
         def __init__(self):
             QtGui.QWidget.__init__(self, parent=None)
-            self.ui = MediViewerGUI()
+            self.ui = SegViewerGUI()
             self.ui.setupUi(self)
 
 
