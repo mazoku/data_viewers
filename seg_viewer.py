@@ -15,7 +15,8 @@ from os import path
 
 import io3d
 import ConfigParser
-import pickle
+import cPickle as pickle
+import gzip
 
 import logging
 logger = logging.getLogger(__name__)
@@ -930,14 +931,15 @@ class SegViewer(QtGui.QMainWindow):
 ################################################################################
 ################################################################################
 if __name__ == '__main__':
-    fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.npy'
-    fname_2 = None
+    fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.pklz'
+    fname_2 = '/home/tomas/Data/liver_segmentation/seg_he_pipeline/seg_he_pipeline_183_venous.pklz'
 
-    datap_1 = pickle.load(open(fname_1, 'rb'))
+    datap_1 = tools.load_pickle_data(fname_1, return_datap=True)
+    datap_2 = tools.load_pickle_data(fname_2, return_datap=True)
     # seg = np.load(fname_1)
 
     # starting application
     app = QtGui.QApplication(sys.argv)
-    le = SegViewer(datap1=datap_1)
+    le = SegViewer(datap1=datap_1, datap2=datap_2)
     le.show()
     sys.exit(app.exec_())

@@ -730,28 +730,38 @@ def label_3D(data, class_labels, background=-1):
     return labels
 
 
-def load_pickle_data(fname, win_level=50, win_width=350, slice_idx=-1):
-    fcontent = None
-    try:
-        import gzip
-        f = gzip.open(fname, 'rb')
-        fcontent = f.read()
-        f.close()
-    except Exception as e:
-        f = open(fname, 'rb')
-        fcontent = f.read()
-        f.close()
-    data_dict = pickle.loads(fcontent)
+def load_pickle_data(fname, slice_idx=-1, return_datap=False):
+    ext_list = ('pklz', 'pickle')
+    if fname.split('.')[-1] in ext_list:
 
-    data = windowing(data_dict['data3d'], level=win_level, width=win_width)
+        try:
+            import gzip
+            f = gzip.open(fname, 'rb')
+            fcontent = f.read()
+            f.close()
+        except Exception as e:
+            f = open(fname, 'rb')
+            fcontent = f.read()
+            f.close()
+        data_dict = pickle.loads(fcontent)
 
-    mask = data_dict['segmentation']
+        if return_datap:
+            return data_dict
 
-    voxel_size = data_dict['voxelsize_mm']
+        # data = tools.windowing(data_dict['data3d'], level=params['win_level'], width=params['win_width'])
+        data = data_dict['data3d']
 
+        mask = data_dict['segmentation']
 
-    if slice_idx != -1:
-        data = data[slice_idx, :, :]
-        mask = mask[slice_idx, :, :]
+        voxel_size = data_dict['voxelsize_mm']
 
-    return data, mask, voxel_size
+        # TODO: predelat na 3D data
+        if slice_idx != -1:
+            data = data[slice_idx, :, :]
+            mask = mask[slice_idx, :, :]
+
+        return data, mask, voxel_size
+
+    else:
+        msg = 'Wrong data type, supported extensions: ', ', '.join(ext_list)
+        raise IOError(msg)
