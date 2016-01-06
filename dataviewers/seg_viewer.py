@@ -61,19 +61,6 @@ class SegViewer(QtGui.QMainWindow):
         self.ui = SegViewerGUI()
         self.ui.setupUi(self)
 
-        # seting up icons
-        # cur_path = path.abspath(__file__)
-        # head, tail = path.split(cur_path)
-        # self.ui.view_L_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Eye.png')))
-        # self.ui.show_im_L_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Stock graph.png')))
-        # self.ui.show_labels_L_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Blue tag.png')))
-        # self.ui.show_contours_L_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Brush.png')))
-        #
-        # self.ui.view_R_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Eye.png')))
-        # self.ui.show_im_R_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Stock graph.png')))
-        # self.ui.show_labels_R_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Blue tag.png')))
-        # self.ui.show_contours_R_BTN.setIcon(QtGui.QIcon(path.join(head, 'icons', 'Brush.png')))
-
         # uprava stylu pro lepsi vizualizaci splitteru
         QtGui.QApplication.setStyle(QtGui.QStyleFactory.create('Cleanlooks'))
 
@@ -91,13 +78,6 @@ class SegViewer(QtGui.QMainWindow):
 
         self.data_L = None
         self.data_R = None
-
-        # self.healthy_label = healthy_label
-        # self.hypo_label = hypo_label
-        # self.hyper_label = hyper_label
-        # self.disp_smoothed = disp_smoothed
-        # self.view_L_curr_idx = 0
-        # self.view_R_curr_idx = 0
 
         self.show_mode_L = SHOW_IM
         self.show_mode_R = SHOW_IM
@@ -123,8 +103,6 @@ class SegViewer(QtGui.QMainWindow):
             # 'voxel_size': (1, 1, 1)
         }
         self.params.update(self.load_parameters())
-        # self.win_l = self.params['win_level']
-        # self.win_w = self.params['win_width']
 
         self.actual_slice_L = 0
         self.actual_slice_R = 0
@@ -135,42 +113,8 @@ class SegViewer(QtGui.QMainWindow):
         self.view_widget_width = 50
         self.two_views = False
 
-        # self.hist_widget = Hist_widget()
-        # self.hist_widget.heal_parameter_changed.connect(self.update_models_from_widget)
-        # self.hist_widget.hypo_parameter_changed.connect(self.update_models_from_widget)
-        # self.hist_widget.hyper_parameter_changed.connect(self.update_models_from_widget)
-
         if datap1 is not None or datap2 is not None:
             self.setup_data(datap1, datap2)
-
-       # # creating object widget, linking its sliders and buttons
-       #  self.objects_widget = Objects_widget()
-       #  self.params['compactness_step'] = self.objects_widget.ui.min_compactness_SL.singleStep() / self.objects_widget.ui.min_compactness_SL.maximum()
-       #  self.objects_widget.area_RS.endValueChanged.connect(self.object_slider_changed)
-       #  self.objects_widget.area_RS.startValueChanged.connect(self.object_slider_changed)
-       #  self.objects_widget.density_RS.endValueChanged.connect(self.object_slider_changed)
-       #  self.objects_widget.density_RS.startValueChanged.connect(self.object_slider_changed)
-       #  self.objects_widget.ui.min_compactness_SL.valueChanged.connect(self.min_compactness_SL_changed)
-       #  # connecting min_compactness line edit and slider
-       #  ww_val = QtGui.QIntValidator(0, 1)
-       #  self.objects_widget.ui.min_compactness_LE.setValidator(ww_val)
-       #  self.objects_widget.ui.min_compactness_LE.textChanged.connect(self.min_compactness_LE_changed)
-       #  # button callbacks
-       #  self.objects_widget.ui.add_obj_BTN.clicked.connect(self.add_obj_BTN_callback)
-       #  self.objects_widget.ui.remove_obj_BTN.clicked.connect(self.remove_obj_BTN_callback)
-       #  self.params['max_area'] = self.objects_widget.area_RS.end()
-       #  self.params['min_area'] = self.objects_widget.area_RS.start()
-       #  self.params['max_density'] = self.objects_widget.density_RS.end()
-       #  self.params['min_density'] = self.objects_widget.density_RS.start()
-       #  self.params['min_compactness'] = self.objects_widget.ui.min_compactness_SL.value() * self.params['compactness_step']
-
-        # self.ui.action_load_serie_1.triggered.connect(lambda: self.action_load_serie_callback(1))
-        # self.ui.action_load_serie_2.triggered.connect(lambda: self.action_load_serie_callback(2))
-
-        # self.ui.action_circle.triggered.connect(self.action_circle_callback)
-        # self.ui.action_show_color_model.triggered.connect(self.action_show_color_model_callback)
-        # self.ui.action_show_object_list.triggered.connect(self.action_show_object_list_callback)
-        # self.ui.action_run.triggered.connect(self.run_callback)
 
         # combo boxes - for figure views
         self.ui.figure_L_CB.currentIndexChanged.connect(self.figure_L_CB_callback)
@@ -218,8 +162,6 @@ class SegViewer(QtGui.QMainWindow):
             self.data_2.create_data(datap2, 'datap2', self.params)
 
         if self.data_1.loaded:
-            # self.hist_widget = Hist_widget(data=self.data_1.data[np.nonzero(self.data_1.mask)])
-            # self.hist_widget.set_data(data=self.data_1.data[np.nonzero(self.data_1.mask)])
 
             #seting up figure and data_L, data_R
             self.ui.figure_L_CB.addItem(self.data_1.filename.split('/')[-1])
@@ -230,18 +172,13 @@ class SegViewer(QtGui.QMainWindow):
             if not self.data_2.loaded:
                 self.data_R = self.data_1
                 self.ui.slice_R_SB.setMaximum(self.data_1.n_slices - 1)
-            #     self.ui.show_labels_R_BTN.setEnabled(True)
-            #     self.ui.show_contours_R_BTN.setEnabled(True)
 
             self.ui.slice_C_SB.setMaximum(self.data_1.n_slices - 1)
             self.ui.slice_L_SB.setMaximum(self.data_1.n_slices - 1)
-            # if self.data_L.segmentation is not None:
             self.ui.show_labels_L_BTN.setEnabled(True)
             self.ui.show_contours_L_BTN.setEnabled(True)
-            # if self.data_R.segmentation is not None:
 
         if self.data_2.loaded:
-            # self.ui.serie_2_RB.setText('Serie #2: ' + self.cc.data_2.filename.split('/')[-1])
             self.ui.figure_L_CB.addItem(self.data_2.filename.split('/')[-1])
             self.ui.figure_R_CB.addItem(self.data_2.filename.split('/')[-1])
             self.data_R = self.data_2
@@ -251,23 +188,16 @@ class SegViewer(QtGui.QMainWindow):
                 self.active_data = self.data_2
                 self.active_data_idx = 2
 
-                # self.hist_widget.set_data(data=self.data_2.data[np.nonzero(self.data_2.mask)])
-
                 self.ui.slice_C_SB.setMaximum(self.data_2.n_slices - 1)
                 self.ui.slice_L_SB.setMaximum(self.data_2.n_slices - 1)
 
                 self.ui.show_labels_L_BTN.setEnabled(True)
                 self.ui.show_contours_L_BTN.setEnabled(True)
-            # else:
-            #     self.ui.show_labels_R_BTN.setEnabled(True)
-            #     self.ui.show_contours_R_BTN.setEnabled(True)
 
             self.ui.slice_R_SB.setMaximum(self.data_2.n_slices - 1)
 
 
         if self.data_L is not None:
-            # self.view_L = data_view_widget.SliceBox(self)
-            # self.view_L = data_view_widget.SliceBox(self.data_L.data_aview.shape[:-1], self.voxel_size, self)
             self.view_L.setup_widget(self.data_L.data_aview.shape[:-1], self.params['voxel_size'][1:])
             self.view_L.setCW(self.params['win_l'], 'c')
             self.view_L.setCW(self.params['win_w'], 'w')
@@ -277,8 +207,6 @@ class SegViewer(QtGui.QMainWindow):
             # self.view_L.mousePressEvent = self.view_L.myMousePressEvent
 
         if self.data_R is not None:
-            # self.view_R = data_view_widget.SliceBox(self)
-            # self.view_R = data_view_widget.SliceBox(self.data_R.data_aview.shape[:-1], self.voxel_size, self)
             self.view_R.setup_widget(self.data_R.data_aview.shape[:-1], self.params['voxel_size'][1:])
             self.view_R.setCW(self.params['win_l'], 'c')
             self.view_R.setCW(self.params['win_w'], 'w')
@@ -293,177 +221,10 @@ class SegViewer(QtGui.QMainWindow):
         key = QKeyEvent.key()
         if key == QtCore.Qt.Key_Escape:
             print 'Escape'
-            # if self.view_L.area_hist_widget is not None and self.view_L.area_hist_widget.isVisible():
-            #     self.view_L.circle_active = False
-            #     self.view_L.area_hist_widget.close()
-            #     self.view_L.setMouseTracking(False)
-            #     self.view_L.updateSlice()
-            # elif self.hist_widget is not None and self.hist_widget.isVisible():
-            #     self.hist_widget.close()
-            # elif self.objects_widget is not None and self.objects_widget.isVisible():
-            #     self.objects_widget.close()
-            # else:
             self.close()
-        # elif key == QtCore.Qt.Key_H:
-        #     print 'H'
-        #     self.action_show_color_model_callback()
-        # elif key == QtCore.Qt.Key_O:
-        #     print 'O'
-        #     self.action_show_object_list_callback()
-        # elif key == QtCore.Qt.Key_L:
-        #     print 'L'
-        #     self.run_callback()
-        # elif key == QtCore.Qt.Key_C:
-        #     print 'C'
-        #     self.action_circle_callback()
-        # elif key == QtCore.Qt.Key_A:  # interactively add an object
-        #     print 'A'
-        #     self.add_obj_BTN_callback()
         else:
             print key, ' - unrecognized hot key.'
 
-    # def mouse_click_event(self, coords, density):
-    #     if self.mode == MODE_ADDING:
-    #         self.add_obj_event(coords, density)
-    #     elif self.mode == MODE_VIEWING:
-    #         self.find_clicked_object(coords)
-
-    # def add_obj_BTN_callback(self):
-    #     print 'adding object'
-    #     self.mode = MODE_ADDING
-    #     # self.view_L.mouseClickSignal.connect(self.add_obj_event)
-    #     # self.view_L.mouseClickSignal.connect(self.add_obj_event)
-    #     # self.view_L.mousePressEvent = self.view_L.myMousePressEvent
-
-    # def find_clicked_object(self, coords):
-    #     print 'finding clicked object'
-    #     lbl = self.active_data.objects[self.actual_slice_L, coords[1], coords[0]]
-    #     # for i in self.objects_widget.ui.objects_TV. rowAt()
-    #     #     self.objects_widget.ui.objects_TV.rowAt()
-    #     if lbl > -1:
-    #         for i in range(self.table_model.rowCount()):
-    #             if self.table_model.data(self.table_model.index(i,0)).toInt()[0] == lbl:
-    #                 break
-    #         self.objects_widget.ui.objects_TV.selectRow(i)
-    #         # self.objects_widget.ui.objects_TV.selectRow(lbl - 1)
-    #     self.view_L.updateSlice()
-
-    # def add_obj_event(self, coords, density):
-    #     self.mode = MODE_VIEWING
-    #     print 'add_obj_event - coords: ', coords, ', density: ', density
-    #     center = [self.actual_slice_L, coords[1], coords[0]]
-    #     if self.data_L.objects is not None:
-    #         idx = self.data_L.objects.max() + 1
-    #     else:
-    #         idx = 1
-    #     new_les = Lesion.create_lesion_from_pt(center, density, idx)
-    #     if self.active_data.models is not None and self.active_data.models['heal'].mean() < density:
-    #         lbl = self.params['hyper_label']
-    #     else:
-    #         lbl = self.params['hypo_label']
-    #     self.data_L.labels[center[0], center[2], center[1]] = lbl
-    #     self.data_L.objects[center[0], center[2], center[1]] = idx
-    #
-    #     self.data_L.append_lesion(new_les)
-    #
-    #     # objects_labels = [x.label for x in self.active_data.lesions]
-    #     # filtered_idxs = coco.objects_filtration(self.active_data, self.params)
-    #     # self.fill_table(self.data_L.lesions, self.data_L.labels)
-    #     # self.fill_table(self.data_L.lesions, self.data_L.labels, self.data_L.labels_filt) #self.cc.filtered_idxs)
-    #     self.fill_table(self.active_data.lesions, self.active_data.labels)
-    #     # self.actual_data.labels_filt
-    #     self.ui.show_contours_L_BTN.setEnabled(True)
-    #
-    #     self.view_L.updateSlice()
-
-    # def min_compactness_SL_changed(self, value):
-    #     self.objects_widget.ui.min_compactness_LE.setText('%.3f' % (value * self.params['compactness_step']))
-    #     self.object_slider_changed(value)
-
-    # def min_compactness_LE_changed(self, value):
-    #     try:  # must be due to the possibility that no character could be entered
-    #         self.objects_widget.ui.min_compactness_SL.setValue(int(value * self.objects_widget.ui.min_compactness_SL.maximum()))
-    #         # self.params['compactness'] = value
-    #     except:
-    #         pass
-
-    # def action_circle_callback(self):
-    #     self.view_L.circle_active = True
-    #     self.view_L.setMouseTracking(True)
-    #     self.view_L.area_hist_widget = ahw.AreaHistWidget()
-    #     self.view_L.area_hist_widget.show()
-    #     # self.view_R.circle_active = True
-
-    # def action_show_color_model_callback(self):
-    #     if self.hist_widget.data is None and self.data_L.loaded:
-    #         self.hist_widget.set_data(self.data_L.data.data[np.nonzero(self.data_L.mask)])
-    #     self.hist_widget.show()
-    #     self.hist_widget.setFocus()
-
-    # def action_show_object_list_callback(self):
-    #     # if self.objects_widget is None:
-    #     #     self.objects_widget = Objects_widget()
-    #     #     self.objects_widget.area_RS.endValueChanged.connect(self.max_area_changed_callback)
-    #     #     self.objects_widget.area_RS.startValueChanged.connect(self.min_area_changed_callback)
-    #     self.objects_widget.show()
-    #     self.objects_widget.setFocus()
-
-    # def serie_1_RB_callback(self):
-    #     self.active_data_idx = 1
-    #     self.active_data = self.cc.data_1
-    #
-    # def serie_2_RB_callback(self):
-    #     self.active_data_idx = 2
-    #     self.active_data = self.cc.data_2
-
-    # def my_selection_changed(self):
-    #     pass
-
-    # def selection_changed(self, selected, deselected):
-    #     if self.objects_widget.isActiveWindow():
-    #         if selected.indexes():
-    #             selected_objects_labels = [self.table_model.objects[x.row()].label for x in self.objects_widget.ui.objects_TV.selectionModel().selectedRows()]
-    #             # print 'show only', self.selected_objects_labels
-    #             slice = [int(x.center[0]) for x in self.active_data.lesions if x.label == selected_objects_labels[0]][0]
-    #             self.ui.slice_C_SB.setValue(slice)
-    #         else:
-    #             selected_objects_labels = [x.label for x in self.table_model.objects]
-    #             # print 'show all', self.selected_objects_labels
-    #         # min_area, max_area = self.objects_widget.area_RS.getRange()
-    #         # min_density, max_density = self.objects_widget.density_RS.getRange()
-    #         # min_comp = self.objects_widget.ui.min_compactness_SL.value() / self.params['compactness_step']
-    #         # coco.objects_filtration(self.selected_objects_labels, self.params, area=(min_area, max_area),
-    #         #                         density=(min_density, max_density), compactness=min_comp)
-    #         coco.objects_filtration(self.active_data, self.params, selected_labels=selected_objects_labels)
-    #     self.update_view_L()
-    #     self.update_view_R()
-    #     # self.activateWindow()
-    #     # self.objects_widget.activateWindow()
-
-    # def object_slider_changed(self, value):
-    #     min_area = self.objects_widget.area_RS.start()
-    #     max_area = self.objects_widget.area_RS.end()
-    #     min_density = self.objects_widget.density_RS.start()
-    #     max_density = self.objects_widget.density_RS.end()
-    #     min_comp = self.objects_widget.ui.min_compactness_SL.value() * self.params['compactness_step']
-    #     self.params['max_area'] = max_area
-    #     self.params['min_area'] = min_area
-    #     self.params['max_density'] = max_density
-    #     self.params['min_density'] = min_density
-    #     self.params['min_compactness'] = min_comp
-    #
-    #     # self.selected_objects_labels
-    #     # objects_labels = [x.label for x in self.active_data.lesions]
-    #     filtered_idxs = coco.objects_filtration(self.active_data, self.params)
-    #     if filtered_idxs is not None:
-    #         self.fill_table(self.active_data.lesions, self.active_data.labels, filtered_idxs)
-    #         # # TODO: nasleduje prasarna
-    #         # if self.view_L.show_mode == self.view_L.SHOW_LABELS:
-    #         #     self.show_labels_L_callback()
-    #         # if self.view_R.show_mode == self.view_R.SHOW_LABELS:
-    #         #     self.show_labels_R_callback()
-    #         self.update_view_L()
-    #         self.update_view_R()
 
     def load_parameters(self, config_path='config.ini'):
         config = ConfigParser.ConfigParser()
@@ -589,83 +350,6 @@ class SegViewer(QtGui.QMainWindow):
         # self.view_R.setSlice(im_R, contours=labels_R, centers=obj_centers)
         self.view_R.setSlice(im_R, contours=labels_R)
 
-    # def calculate_models_callback(self):
-    #     # self.statusBar().showMessage('Calculating intensity models...')
-    #     if self.params['zoom']:
-    #         data = self.data_zoom(self.active_data.data, self.active_data.voxel_size, self.params['working_voxel_size_mm'])
-    #         mask = self.data_zoom(self.active_data.mask, self.active_data.voxel_size, self.params['working_voxel_size_mm'])
-    #     else:
-    #         data = tools.resize3D(self.active_data.data, self.params['scale'])
-    #         mask = tools.resize3D(self.active_data.mask, self.params['scale'])
-    #     self.active_data.models = coco.calculate_intensity_models(data, mask, self.params)
-    #     # self.statusBar().showMessage('Intensity models calculated.')
-    #     self.update_models()
-
-    # def update_models(self):
-    #     if self.hist_widget is None:
-    #         self.hist_widget = Hist_widget(data=self.data_L.data)
-    #     self.hist_widget.set_models(self.active_data.models)
-    #     # self.hist_widget.update_heal_rv(self.active_data.models['heal'])
-    #     # self.hist_widget.update_hypo_rv(self.active_data.models['hypo'])
-    #     # self.hist_widget.update_hyper_rv(self.active_data.models['hyper'])
-    #
-    #     # self.hist_widget.update_figures()
-
-    # def update_models_from_widget(self, mean, std, key):
-    #     # key = 'heal'
-    #     # print key, self.active_data.models[key].mean(),
-    #     self.active_data.models[key] = scista.norm(mean, std)
-    #     # print self.active_data.models[key].mean()
-
-    # def run_callback(self):
-    #     # Viewer_3D.run(self.data)
-    #     # viewer = Viewer_3D.Viewer_3D(self.data)
-    #     # viewer.show()
-    #
-    #     # run localization
-    #     # self.statusBar().showMessage('Localization started...')
-    #     coco.run_mrf(self.active_data, self.params)
-    #     # self.active_data, self.models = coco.run_mrf(self.active_data, self.params, models=self.models)
-    #     self.update_models()
-    #     self.active_data.processed = True
-    #     if self.show_view_L and self.data_L == self.active_data:
-    #         self.ui.show_labels_L_BTN.setEnabled(True)
-    #         self.ui.show_contours_L_BTN.setEnabled(True)
-    #     if self.show_view_R and self.data_R == self.active_data:
-    #         self.ui.show_labels_R_BTN.setEnabled(True)
-    #         self.ui.show_contours_R_BTN.setEnabled(True)
-    #
-    #     # seting up range of area slider
-    #     areas = [x.area for x in self.active_data.lesions]
-    #     self.objects_widget.set_area_range(areas)
-    #
-    #     densities = [x.mean_density for x in self.active_data.lesions]
-    #     self.objects_widget.set_density_range(densities)
-    #
-    #     # filling table with objects
-    #     # objects_labels = [x.label for x in self.active_data.lesions]
-    #     # self.fill_table(self.active_data.lesions, self.active_data.objects, objects_labels)
-    #
-    #     self.ui.show_labels_L_BTN.setEnabled(True)
-    #     self.ui.show_contours_L_BTN.setEnabled(True)
-
-    # def fill_table(self, lesions, labels, idxs=None):
-    #     # if self.objects_widget is None:
-    #     #     self.objects_widget = Objects_widget()
-    #     #     # tableview selection changed
-    #     #     self.objects_widget.ui.objects_TV.selectionModel().selectionChanged.connect(self.selection_changed)
-    #     if idxs is None:
-    #         idxs = [x.label for x in lesions]
-    #         # lesions_filtered = lesions[:]  # copying the list
-    #     # else:
-    #     lesions_filtered = [x for x in lesions if x.label in idxs]
-    #     # labels_filtered = np.where(labels in idxs, labels, 0)
-    #     labels_filtered = labels * np.in1d(labels, idxs).reshape(labels.shape)
-    #     self.table_model = mtm.MyTableModel(lesions_filtered, labels_filtered)
-    #     self.objects_widget.ui.objects_TV.setModel(self.table_model)
-    #     self.objects_widget.ui.objects_TV.selectionModel().selectionChanged.connect(self.selection_changed)
-    #
-    #     # self.ui.objects_TV.selectionModel().selectionChanged.connect(self.selection_changed)
 
     def view_L_callback(self):
         if self.show_view_L != self.show_view_R:  # logical XOR
@@ -706,16 +390,12 @@ class SegViewer(QtGui.QMainWindow):
         # enabling and disabling other toolbar icons
         self.ui.show_im_R_BTN.setEnabled(not self.ui.show_im_R_BTN.isEnabled())
 
-        # if self.show_view_R and self.data_R.labels is not None:
         if self.show_view_R and self.data_R.processed:
             self.ui.show_labels_R_BTN.setEnabled(True)
             self.ui.show_contours_R_BTN.setEnabled(True)
         else:
             self.ui.show_labels_R_BTN.setEnabled(False)
             self.ui.show_contours_R_BTN.setEnabled(False)
-
-        # self.statusBar().showMessage('Right view set to %s' % self.show_view_R)
-        # print 'view_2 set to', self.show_view_2
 
         self.view_R.update()
 
@@ -732,16 +412,12 @@ class SegViewer(QtGui.QMainWindow):
         im = self.get_image('L')
         self.view_L.setSlice(im)
 
-        # self.statusBar().showMessage('data_L set to im')
-
     def show_im_R_callback(self):
         self.show_mode_R = SHOW_IM
         self.view_R.show_mode = self.view_R.SHOW_IM
 
         im = self.get_image('R')
         self.view_R.setSlice(im)
-
-        # self.statusBar().showMessage('data_R set to im')
 
     def show_labels_L_callback(self):
         self.show_mode_L = SHOW_LABELS
@@ -750,16 +426,12 @@ class SegViewer(QtGui.QMainWindow):
         im = self.get_image('L')
         self.view_L.setSlice(im)
 
-        # self.statusBar().showMessage('data_L set to labels')
-
     def show_labels_R_callback(self):
         self.show_mode_R = SHOW_LABELS
         self.view_R.show_mode = self.view_R.SHOW_LABELS
 
         im = self.get_image('R')
         self.view_R.setSlice(im)
-
-        # self.statusBar().showMessage('data_R set to labels')
 
     def show_contours_L_callback(self):
         if self.show_mode_L == SHOW_CONTOURS:
@@ -772,12 +444,7 @@ class SegViewer(QtGui.QMainWindow):
 
         im = self.get_image('L')
         labels = self.data_L.labels_filt[self.actual_slice_L, :, :]
-        # obj_centers = [self.data_L.object_centers[:2] if self.data_L.object_centers[2] == self.actual_slice_L]
-        # obj_centers = [x[1:] for x in self.data_L.object_centers if round(x[0]) == self.actual_slice_L]
-        # self.view_L.setSlice(im, contours=labels, centers=self.data_L.object_centers_filt[self.actual_slice_L,...])
         self.view_L.setSlice(im, contours=labels)
-
-        # self.statusBar().showMessage('data_L set to contours')
 
     def show_contours_R_callback(self):
         if self.show_mode_R == SHOW_CONTOURS:
@@ -790,17 +457,13 @@ class SegViewer(QtGui.QMainWindow):
 
         im = self.get_image('R')
         labels = self.data_R.labels_filt[self.actual_slice_R, :, :]
-        # self.view_R.setSlice(im, contours=labels, centers=self.data_R.object_centers_filt[self.actual_slice_R,...])
         self.view_R.setSlice(im, contours=labels)
-
-        # self.statusBar().showMessage('data_R set to contours')
 
     def update_view_L(self):
         if self.show_view_L:
             if self.view_L.show_mode == self.view_L.SHOW_LABELS:
                 self.show_labels_L_callback()
             elif self.view_L.show_mode == self.view_L.SHOW_CONTOURS:
-                # self.show_contours_L_callback()
                 self.show_contours_L()
 
     def update_view_R(self):
@@ -808,7 +471,6 @@ class SegViewer(QtGui.QMainWindow):
             if self.view_R.show_mode == self.view_R.SHOW_LABELS:
                 self.show_labels_R_callback()
             elif self.view_R.show_mode == self.view_R.SHOW_CONTOURS:
-                # self.show_contours_R_callback()
                 self.show_contours_R()
 
     def figure_L_CB_callback(self):
@@ -855,50 +517,6 @@ class SegViewer(QtGui.QMainWindow):
         self.view_R.reinit((self.data_R.shape[2], self.data_R.shape[1]))
         self.show_im_R_callback()
 
-    # def action_load_serie_callback(self, serie_number):
-    #     # loading file and creating dataplus format
-    #     fname = str(QtGui.QFileDialog.getOpenFileName(self, 'Open file', self.params['data_dir']))
-    #     datap = dr.Get3DData(fname, dataplus_format=True)
-    #
-    #     # creating data structure
-    #     # data = Data.Data()
-    #     # data.create_data(datap, fname)
-    #
-    #     if serie_number == 1:
-    #         self.setup_data(datap1=datap)
-    #     else:
-    #         self.setup_data(datap2=datap)
-    #     # print 'Does not work yet.'
-    #     # print fname
-
-    # def remove_obj_BTN_callback(self):
-    #     indexes = self.objects_widget.ui.objects_TV.selectionModel().selectedRows()
-    #     # for i in reversed(indexes):
-    #     #     self.table_model.removeRow(i.row())
-    #     for i in indexes:
-    #         obj = self.table_model.objects[i.row()]
-    #         self.remove_object(obj)
-    #
-    #     # objects_labels = [x.label for x in self.active_data.lesions]
-    #     filtered_idxs = coco.objects_filtration(self.active_data, self.params)
-    #     self.fill_table(self.active_data.lesions, self.active_data.objects, filtered_idxs)
-    #     # #TODO: nasleduje prasarna
-    #     # if self.view_L.show_mode == self.view_L.SHOW_LABELS:
-    #     #     self.show_labels_L_callback()
-    #     # if self.view_R.show_mode == self.view_R.SHOW_LABELS:
-    #     #     self.show_labels_R_callback()
-    #     self.update_view_L()
-    #     self.update_view_R()
-
-    # def remove_object(self, obj):
-    #     lbl = obj.label
-    #     im = self.active_data.objects == lbl
-    #     self.active_data.objects[np.nonzero(im)] = self.params['bgd_label']
-    #     self.active_data.labels[np.nonzero(im)] = self.params['healthy_label']
-    #
-    #     self.active_data.lesions.remove(obj)
-    #     print 'removed label', lbl
-
     def get_image(self, site):
         im = None
         if site == 'L':
@@ -919,18 +537,11 @@ class SegViewer(QtGui.QMainWindow):
             #     im = self.data_R.labels_filt_aview[...,self.actual_slice_R]
         return im
 
-    # def run(self, im, labels, healthy_label, hypo_label, hyper_label, slice_axis=2, disp_smoothed=False):
-    #     if slice_axis == 0:
-    #         im = np.transpose(im, (1, 2, 0))
-    #         labels = np.transpose(labels, (1, 2, 0))
-    #     app = QtGui.QApplication(sys.argv)
-    #     le = MediViewer(im, labels, healthy_label, hypo_label, hyper_label, disp_smoothed)
-    #     le.show()
-    #     sys.exit(app.exec_())
 
 ################################################################################
 ################################################################################
 if __name__ == '__main__':
+    #TODO: udelat synteticka data a nevazat se na moje konkretni data
     fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.pklz'
     fname_2 = '/home/tomas/Data/liver_segmentation/seg_he_pipeline/seg_he_pipeline_183_venous.pklz'
 
