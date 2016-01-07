@@ -7,7 +7,15 @@ from PyQt4 import QtGui, QtCore
 
 import numpy as np
 import scipy.stats as scista
-import tools
+#import tools
+import os
+if os.path.exists('../imtools/'):
+    sys.path.append('../imtools/')
+    from imtools import tools
+else:
+    print 'You need to import package imtools: https://github.com/mjirik/imtools'
+    sys.exit(0)
+
 # from mayavi import mlab
 # import TumorVisualiser
 # import Viewer_3D

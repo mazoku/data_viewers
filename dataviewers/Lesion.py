@@ -1,7 +1,7 @@
 __author__ = 'tomas'
 
 import numpy as np
-import tools
+# import tools
 
 PRIORITY_LOW = 0  # for lessions that are extracted autonomously
 PRIORITY_HIGH = 1  # for lessions that are added by the user, these wil not be filtrated by sliders (area, density, ...)

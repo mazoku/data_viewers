@@ -8,7 +8,7 @@ logging.basicConfig()
 
 import pickle
 
-import tools
+# import tools
 
 # definition of different views
 VIEW_TABLE = {'axial': (2,1,0),
