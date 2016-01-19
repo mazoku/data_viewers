@@ -271,8 +271,9 @@ class Data(object):
         self.shape = self.data.shape
 
         if 'segmentation' in datap and datap['segmentation'] is not None:
-            labels = np.where(datap['mask'], params['healthy_label'], 0)
-            labels = np.where(datap['segmentation'] == 1, params['hypo_label'], labels)
+            # labels = np.where(datap['mask'], params['healthy_label'], 0)
+            # labels = np.where(datap['segmentation'] == 1, params['hypo_label'], labels)
+            labels = np.where(datap['segmentation'] == 1, params['hypo_label'], params['bgd_label'])
             # labels = np.where(datap['segmentation'] == 3, params['hyper_label'], labels)
             self.labels = labels
             self.processed = True

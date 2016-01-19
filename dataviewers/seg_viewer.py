@@ -9,12 +9,25 @@ import numpy as np
 import scipy.stats as scista
 #import tools
 import os
-if os.path.exists('../imtools/'):
-    sys.path.append('../imtools/')
-    from imtools import tools
+# if os.path.exists('../../imtools/'):
+#     sys.path.append('../../imtools/')
+#     from imtools import tools
+# else:
+#     print 'You need to import package imtools: https://github.com/mjirik/imtools'
+#     sys.exit(0)
+
+path1 = '../imtools/'
+path2 = '../../imtools/'
+if os.path.exists(path1):
+    path = path1
+elif os.path.exists(path2):
+    path = path2
 else:
-    print 'You need to import package imtools: https://github.com/mjirik/imtools'
+    print 'Package imtools not found.'
     sys.exit(0)
+print 'Package imtools found at', path
+sys.path.append(path)
+from imtools import tools
 
 # from mayavi import mlab
 # import TumorVisualiser
@@ -550,11 +563,19 @@ class SegViewer(QtGui.QMainWindow):
 ################################################################################
 if __name__ == '__main__':
     #TODO: udelat synteticka data a nevazat se na moje konkretni data
-    fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.pklz'
-    fname_2 = '/home/tomas/Data/liver_segmentation/seg_he_pipeline/seg_he_pipeline_183_venous.pklz'
+    # fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.pklz'
+    # fname_2 = '/home/tomas/Data/liver_segmentation/seg_he_pipeline/seg_he_pipeline_183_venous.pklz'
+    fname_1 = '/home/tomas/Data/liver_segmentation/org-exp_180_49509315_arterial_5.0_B30f-.pklz'
+    fname_2 = '/home/tomas/Data/liver_segmentation/org-exp_180_49509315_venous_5.0_B30f-.pklz'
 
     datap_1 = tools.load_pickle_data(fname_1, return_datap=True)
     datap_2 = tools.load_pickle_data(fname_2, return_datap=True)
+    # maska = datap_1['segmentation']
+    # s1, r1, c1 = np.nonzero(datap_1['segmentation'])
+    # t1_z = np.mean(s1)
+    # s2, r2, c2 = np.nonzero(datap_2['segmentation'])
+    # t2_z = np.mean(s2)
+    # print t1_z, t2_z
     # seg = np.load(fname_1)
 
     # starting application
