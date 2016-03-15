@@ -559,17 +559,31 @@ class SegViewer(QtGui.QMainWindow):
         return im
 
 
+def show(data1, data2):
+    if isinstance(data1, str):
+        data1 = tools.load_pickle_data(data1, return_datap=True)
+    if isinstance(data2, str):
+        data2 = tools.load_pickle_data(data2, return_datap=True)
+    app = QtGui.QApplication(sys.argv)
+    le = SegViewer(datap1=data1, datap2=data2)
+    le.show()
+    sys.exit(app.exec_())
+
 ################################################################################
 ################################################################################
 if __name__ == '__main__':
     #TODO: udelat synteticka data a nevazat se na moje konkretni data
     # fname_1 = '/home/tomas/Data/liver_segmentation/seg_rw/seg_rw_183_venous.pklz'
     # fname_2 = '/home/tomas/Data/liver_segmentation/seg_he_pipeline/seg_he_pipeline_183_venous.pklz'
-    fname_1 = '/home/tomas/Data/liver_segmentation/org-exp_180_49509315_arterial_5.0_B30f-.pklz'
-    fname_2 = '/home/tomas/Data/liver_segmentation/org-exp_180_49509315_venous_5.0_B30f-.pklz'
+    # fname_1 = '/home/tomas/Data/medical/liver_segmentation/org-exp_180_49509315_arterial_5.0_B30f-.pklz'
+    # fname_2 = '/home/tomas/Data/medical/liver_segmentation/org-exp_180_49509315_venous_5.0_B30f-.pklz'
+    fname_1 = '/home/tomas/Data/medical/liver_segmentation/org-exp_183_46324212_arterial_5.0_B30f-.pklz'
+    fname_2 = '/home/tomas/Data/medical/liver_segmentation/org-exp_183_46324212_venous_5.0_B30f-.pklz'
 
     datap_1 = tools.load_pickle_data(fname_1, return_datap=True)
     datap_2 = tools.load_pickle_data(fname_2, return_datap=True)
+    print datap_1['segmentation'].shape
+    print datap_2['segmentation'].shape
     # maska = datap_1['segmentation']
     # s1, r1, c1 = np.nonzero(datap_1['segmentation'])
     # t1_z = np.mean(s1)
