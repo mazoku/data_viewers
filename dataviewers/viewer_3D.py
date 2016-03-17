@@ -110,6 +110,12 @@ class Viewer_3D(QtGui.QWidget):
 #     sys.exit(app2.exec_())
 
 
+def show(data, range=False):
+    app = QtGui.QApplication(sys.argv)
+    viewer = Viewer_3D(data, range=range)
+    viewer.show()
+    app.exec_()
+
 ################################################################################
 ################################################################################
 if __name__ == '__main__':

@@ -564,10 +564,17 @@ def show(data1, data2):
         data1 = tools.load_pickle_data(data1, return_datap=True)
     if isinstance(data2, str):
         data2 = tools.load_pickle_data(data2, return_datap=True)
+    if not isinstance(data1, dict):
+        data1 = {'data3d': data1, 'segmentation': np.zeros_like(data1), 'voxelsize_mm': np.ones(data1.ndim), 'slab': 0}
+    if not isinstance(data2, dict):
+        data2 = {'data3d': data2, 'segmentation': np.zeros_like(data2), 'voxelsize_mm': np.ones(data2.ndim), 'slab': 0}
     app = QtGui.QApplication(sys.argv)
     le = SegViewer(datap1=data1, datap2=data2)
+    le.data_1.labels = data1['segmentation'].astype(np.int)
+    le.data_2.labels = data2['segmentation'].astype(np.int)
     le.show()
-    sys.exit(app.exec_())
+    app.exec_()
+    # sys.exit(app.exec_())
 
 ################################################################################
 ################################################################################
