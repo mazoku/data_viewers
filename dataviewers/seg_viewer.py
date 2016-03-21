@@ -559,7 +559,7 @@ class SegViewer(QtGui.QMainWindow):
         return im
 
 
-def show(data1, data2):
+def show(data1, data2, app=None):
     if isinstance(data1, str):
         data1 = tools.load_pickle_data(data1, return_datap=True)
     if isinstance(data2, str):
@@ -568,13 +568,18 @@ def show(data1, data2):
         data1 = {'data3d': data1, 'segmentation': np.zeros_like(data1), 'voxelsize_mm': np.ones(data1.ndim), 'slab': 0}
     if not isinstance(data2, dict):
         data2 = {'data3d': data2, 'segmentation': np.zeros_like(data2), 'voxelsize_mm': np.ones(data2.ndim), 'slab': 0}
-    app = QtGui.QApplication(sys.argv)
+
+    if app is None:
+        app = QtGui.QApplication(sys.argv)
     le = SegViewer(datap1=data1, datap2=data2)
     le.data_1.labels = data1['segmentation'].astype(np.int)
     le.data_2.labels = data2['segmentation'].astype(np.int)
+    # print 'data1 values:', np.unique(data1['segmentation'].astype(np.int))
+    # print 'data2 values:', np.unique(data2['segmentation'].astype(np.int))
     le.show()
     app.exec_()
     # sys.exit(app.exec_())
+
 
 ################################################################################
 ################################################################################
